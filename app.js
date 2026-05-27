@@ -1,5 +1,5 @@
 //import libraries
-import nlp from 'compromise/three';
+import nlp from "./node_modules/compromise/builds/three/compromise-three.mjs";
 /* https://github.com/spencermountain/compromise/blob/master/README.md
 Compromise Key methods and functions 
 .normalize({}) - clean-up the text in various ways
@@ -21,11 +21,12 @@ Verbs:
 Nouns:
 .nouns().toSingular()
 */
-const synonyms = require("synonyms");
+//import synonyms from "./node_modules/synonyms/";
 
 // Create new instance - speech synthesis
 const synthesis = window.speechSynthesis;
-
+// speech variable needs global scope
+let speech;
 
 // Establish that browser has speech recognition
 window.SpeechRecognition =
@@ -35,32 +36,40 @@ window.SpeechRecognition =
 const recognition = new SpeechRecognition();
 recognition.interimResults = true;
 recognition.continuous = true;
-recognition.lang = 'en-US';
+recognition.lang = "en-US";
 
 // Grab elements from the DOM
-let startRecognition = document.querySelector('#start');
-let stopRecognition = document.querySelector('#stop');
-let clearTranscript = document.querySelector('#clear');
-let playSpeech = document.querySelector('#play');
-let transcript = document.querySelector('#transcript');
+let startRecognition = document.querySelector("#start");
+let stopRecognition = document.querySelector("#stop");
+let clearTranscript = document.querySelector("#clear");
+let playSpeech = document.querySelector("#play");
+let transcript = document.querySelector("#transcript");
 
 // Add event listeners
-startRecognition.addEventListener('click', handleStartRecognition);
-stopRecognition.addEventListener('click', handleStopRecognition);
-clearTranscript.addEventListener('click', handleClearTranscript);
-playSpeech.addEventListener('click', handlePlaySpeech);
+startRecognition.addEventListener("click", handleStartRecognition);
+stopRecognition.addEventListener("click", handleStopRecognition);
+clearTranscript.addEventListener("click", handleClearTranscript);
+playSpeech.addEventListener("click", handlePlaySpeech);
 
 function handleStartRecognition(event) {
-  console.log('start speech recognition');
+  console.log("start speech recognition");
 
-  recognition.addEventListener('error', (event) => {
-    console.log('an error occurred');
+  recognition.addEventListener("error", (event) => {
+    console.log("an error occurred");
   });
 
-  recognition.addEventListener('result', (event) => {
+  recognition.addEventListener("result", (event) => {
+    /*
     const results = Array.from(event.results)
       .map((item) => item[0].transcript)
-      .join('');
+      .join("");
+    */
+    speech = nlp(
+      Array.from(event.results)
+        .map((item) => item[0].transcript)
+        .join(""),
+    ).normalize();
+    const results = speech.text();
 
     console.log(results);
     transcript.textContent = results;
@@ -70,16 +79,16 @@ function handleStartRecognition(event) {
 }
 
 function handleStopRecognition(event) {
-  console.log('stop speech recognition');
+  console.log("stop speech recognition");
   recognition.stop();
 }
 
 function handleClearTranscript(event) {
-  transcript.textContent = '';
+  transcript.textContent = "";
 }
 
 function handlePlaySpeech(event) {
-  console.log('speech synthesis');
+  console.log("speech synthesis");
 
   let utterance = new SpeechSynthesisUtterance(transcript.textContent);
   synthesis.speak(utterance);
