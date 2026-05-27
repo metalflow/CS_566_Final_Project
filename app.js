@@ -1,5 +1,31 @@
+//import libraries
+import nlp from 'compromise/three';
+/* https://github.com/spencermountain/compromise/blob/master/README.md
+Compromise Key methods and functions 
+.normalize({}) - clean-up the text in various ways
+Selections:
+.people(): Find names of people.
+.places(): Find locations.
+.dates(): Extract and format dates (e.g., doc.dates().format('{month} {date}')).
+.match(): Use a regex-like syntax for custom searches (e.g., doc.match('#Adjective #Noun')).
+Transformations:
+.toUpperCase() / .toLowerCase(): Change case.
+.toNegative() / .toPositive(): Flip the sentiment of sentences.
+.verbs().toPastTense(): Change verb tenses automatically.
+Output:
+.text(): Return the modified string.
+.json(): Return the parsed data as an object for further programmatic use.
+Verbs:
+.verbs().parse() - get tokenized verb-phrase
+.verbs().subjects() - what is doing the verb action
+Nouns:
+.nouns().toSingular()
+*/
+const synonyms = require("synonyms");
+
 // Create new instance - speech synthesis
 const synthesis = window.speechSynthesis;
+
 
 // Establish that browser has speech recognition
 window.SpeechRecognition =
