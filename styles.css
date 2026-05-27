@@ -1,0 +1,16 @@
+:root {
+  --black: #121212;
+  --white: #fafafa;
+}
+
+body {
+  background-color: var(--black);
+  color: var(--white);
+}
+
+textarea {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: var(--black);
+  color: var(--white);
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Speech Demo</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <main class="container text-center mx-auto mt-5">
+      <h1>Web Speech Demo</h1>
+      <div class="my-4">
+        <button class="btn btn-success my-2" id="start">
+          Start Recognition
+        </button>
+        <button class="btn btn-danger my-2" id="stop">Stop Recognition</button>
+        <button class="btn btn-light my-2" id="clear">Clear Transcript</button>
+        <button class="btn btn-info my-2" id="play">Play Speech</button>
+      </div>
+      <textarea name="transcript" id="transcript" rows="10"></textarea>
+    </main>
+  </body>
+</html>
