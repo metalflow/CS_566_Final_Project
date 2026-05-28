@@ -34,7 +34,7 @@ window.SpeechRecognition =
 
 // Create new instance - speech recognition
 const recognition = new SpeechRecognition();
-recognition.interimResults = true;
+recognition.interimResults = false;
 recognition.continuous = true;
 recognition.lang = "en-US";
 
@@ -59,20 +59,13 @@ function handleStartRecognition(event) {
   });
 
   recognition.addEventListener("result", (event) => {
-    /*
-    const results = Array.from(event.results)
-      .map((item) => item[0].transcript)
-      .join("");
-    */
-    speech = nlp(
-      Array.from(event.results)
-        .map((item) => item[0].transcript)
-        .join(""),
-    ).normalize();
+    let lastIndex = event.results.length - 1;
+    speech = nlp(event.results[lastIndex][0].transcript).normalize();
+
     const results = speech.text();
 
     console.log(results);
-    transcript.textContent = results;
+    transcript.textContent = heySiskel(speech);
   });
 
   recognition.start();
@@ -92,4 +85,23 @@ function handlePlaySpeech(event) {
 
   let utterance = new SpeechSynthesisUtterance(transcript.textContent);
   synthesis.speak(utterance);
+}
+
+function heySiskel(input) {
+  //condition our input
+  //SpeechRecognition often mistakes Siskel for Cisco
+  input.replace("hey Cisco", "hey Siskel");
+
+  //put our conditioned input text on top and separate with a carriage return for display
+  let output = input.text();
+  output += "\n";
+
+  //begin processing
+  if (input.has("hey Siskel")) {
+    output += "yes sir";
+  } else {
+    output += "you must say hey siskel to activate siskel";
+  }
+
+  return output;
 }
