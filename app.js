@@ -42,14 +42,14 @@ recognition.lang = "en-US";
 let startRecognition = document.querySelector("#start");
 let stopRecognition = document.querySelector("#stop");
 let clearTranscript = document.querySelector("#clear");
-let playSpeech = document.querySelector("#play");
+//let playSpeech = document.querySelector("#play");
 let transcript = document.querySelector("#transcript");
 
 // Add event listeners
 startRecognition.addEventListener("click", handleStartRecognition);
 stopRecognition.addEventListener("click", handleStopRecognition);
 clearTranscript.addEventListener("click", handleClearTranscript);
-playSpeech.addEventListener("click", handlePlaySpeech);
+//playSpeech.addEventListener("click", handlePlaySpeech);
 
 function handleStartRecognition(event) {
   console.log("start speech recognition");
@@ -89,19 +89,41 @@ function handlePlaySpeech(event) {
 
 function heySiskel(input) {
   //condition our input
+  input.toLowerCase();
   //SpeechRecognition often mistakes Siskel for Cisco
-  input.replace("hey Cisco", "hey Siskel");
+  input.replace("hey cisco", "hey siskel");
 
   //put our conditioned input text on top and separate with a carriage return for display
   let output = input.text();
   output += "\n";
 
   //begin processing
-  if (input.has("hey Siskel")) {
-    output += "yes sir";
-  } else {
-    output += "you must say hey siskel to activate siskel";
+  if (!input.has("hey siskel")) {
+    output += "you must say 'hey siskel' to activate siskel";
+    synthesis.speak(
+      new SpeechSynthesisUtterance(
+        "you must say 'hey siskel' to activate siskel",
+      ),
+    );
+    return output;
   }
+
+  let phrase = input.after("hey siskel").out("array");
+  //let sentences = input.sentences().out("array");
+  let verbs = input.nouns().out("array");
+  let nouns = input.verbs().out("array");
+  let subjects = input.verbs().subjects();
+  let places = input.places();
+  let people = input.people().parse();
+
+  console.log(phrase);
+  //console.log(sentences);
+  console.log(verbs);
+  console.log(nouns);
+  console.log(subjects);
+  console.log(places);
+  console.log(people);
+  output += "yes sir";
 
   return output;
 }
