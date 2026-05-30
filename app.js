@@ -22,6 +22,7 @@ Nouns:
 .nouns().toSingular()
 */
 //import synonyms from "./node_modules/synonyms/";
+import axios from "./node_modules/axios/index.cjs";
 
 // Create new instance - speech synthesis
 const synthesis = window.speechSynthesis;
@@ -53,6 +54,20 @@ clearTranscript.addEventListener("click", handleClearTranscript);
 
 const HelpSpeech =
   "I know how to get the duration of a movie, get a review for a movie, find out if an actor was in a movie, and find a movie theater near a location you provide.";
+
+async function getOMDBAPIdata(movieTitle) {
+  try {
+    const URL = "https://www.omdbapi.com/?t=";
+    const KEY = "&apikey=191c50ee";
+    const query = (URL += movieTitle += KEY);
+    const response = await axios.get(query);
+    console.log(response.data); // Logs parsed data object
+    console.log(response.status); // Logs HTTP status code (e.g., 200)
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+  }
+  return response;
+}
 
 function handleStartRecognition(event) {
   console.log("start speech recognition");
@@ -155,8 +170,9 @@ function heySiskel(input) {
   let speech;
   switch (true) {
     case phrase.has("how long is"):
-      speech = "you asked about the duration of ";
-      speech += phrase.nouns().out("array")[0];
+      speech = getMovieDuration(phrase.nouns().out("array")[0]);
+      //speech = "you asked about the duration of ";
+      //speech += phrase.nouns().out("array")[0];
       break;
     case phrase.has("runtime") ||
       phrase.has("run time") ||
@@ -172,4 +188,13 @@ function heySiskel(input) {
 
   synthesis.speak(new SpeechSynthesisUtterance(speech));
   return (output += speech);
+}
+
+function getMovieDuration(movieTitle) {
+  const data = getOMDBAPIdata(movieTitle);
+  let speech = movieTitle;
+  speech += " is ";
+  speech += data.Runtime;
+  speech += " long.";
+  return speech;
 }
