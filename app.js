@@ -51,6 +51,9 @@ stopRecognition.addEventListener("click", handleStopRecognition);
 clearTranscript.addEventListener("click", handleClearTranscript);
 //playSpeech.addEventListener("click", handlePlaySpeech);
 
+const HelpSpeech =
+  "I know how to get the duration of a movie, get a review for a movie, find out if an actor was in a movie, and find a movie theater near a location you provide.";
+
 function handleStartRecognition(event) {
   console.log("start speech recognition");
 
@@ -110,7 +113,7 @@ function heySiskel(input) {
   }
 
   //break up input by activation phrase with one verb and one noun
-  let phrase = input.match("hey ~siskel~ * #verb * #noun", null, {
+  let phrase = input.match("hey ~siskel~ *", null, {
     fuzzy: 0.7,
   });
   console.log(phrase.out("array"));
@@ -129,17 +132,44 @@ function heySiskel(input) {
   console.log(phrase.text());
 
   let verbs = phrase.verbs().out("array");
+  let adverbs = phrase.adverbs().out("array");
   let nouns = phrase.nouns().out("array");
+  let pronouns = phrase.pronouns().out("array");
   let subjects = phrase.verbs().subjects().out("array");
   let places = phrase.places().out("array");
   let people = phrase.people().out("array");
+  let question = phrase
+    .match("(who|what|when|where|how) * #verb * #noun")
+    .out("array");
 
+  console.log(verbs);
+  console.log(adverbs);
   console.log(nouns);
+  console.log(pronouns);
   console.log(subjects);
   console.log(places);
   console.log(people);
+  console.log(question);
 
-  output += "yes sir";
+  //decision tree for deciding which function to apply
+  let speech;
+  switch (true) {
+    case phrase.has("how long is"):
+      speech = "you asked about the duration of ";
+      speech += phrase.nouns().out("array")[0];
+      break;
+    case phrase.has("runtime") ||
+      phrase.has("run time") ||
+      phrase.has("duration"):
+      speech = "you asked about the duration of ";
+      speech += phrase.nouns().out("array")[1];
+      break;
+    default:
+      speech = "I didn't understand that question.  ";
+      speech += HelpSpeech;
+      break;
+  }
 
-  return output;
+  synthesis.speak(new SpeechSynthesisUtterance(speech));
+  return (output += speech);
 }
