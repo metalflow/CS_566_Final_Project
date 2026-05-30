@@ -92,13 +92,14 @@ function heySiskel(input) {
   input.toLowerCase();
   //SpeechRecognition often mistakes Siskel for Cisco
   input.replace("hey cisco", "hey siskel");
+  //input.replace("hey sisco", "hey siskel");
 
   //put our conditioned input text on top and separate with a carriage return for display
   let output = input.text();
   output += "\n";
 
   //begin processing
-  if (!input.has("hey siskel")) {
+  if (!input.has("hey ~siskel~", null, { fuzzy: 0.7 })) {
     output += "you must say 'hey siskel' to activate siskel";
     synthesis.speak(
       new SpeechSynthesisUtterance(
@@ -108,21 +109,36 @@ function heySiskel(input) {
     return output;
   }
 
-  let phrase = input.after("hey siskel").out("array");
-  //let sentences = input.sentences().out("array");
-  let verbs = input.nouns().out("array");
-  let nouns = input.verbs().out("array");
-  let subjects = input.verbs().subjects();
-  let places = input.places();
-  let people = input.people().parse();
+  //break up input by activation phrase with one verb and one noun
+  let phrase = input.match("hey ~siskel~ * #verb * #noun", null, {
+    fuzzy: 0.7,
+  });
+  console.log(phrase.out("array"));
 
-  console.log(phrase);
-  //console.log(sentences);
-  console.log(verbs);
+  //check for multiple utterances
+  if (phrase.length > 1) {
+    let error =
+      "You said 'Hey Siskel' more than once. I will only process the first phrase, which was ";
+    error += phrase.out("array")[0];
+    console.log(error);
+    synthesis.speak(new SpeechSynthesisUtterance(error));
+  }
+
+  //reparse and target down to just one phrase
+  phrase = nlp(phrase.out("array")[0]).remove("hey siskel");
+  console.log(phrase.text());
+
+  let verbs = phrase.verbs().out("array");
+  let nouns = phrase.nouns().out("array");
+  let subjects = phrase.verbs().subjects().out("array");
+  let places = phrase.places().out("array");
+  let people = phrase.people().out("array");
+
   console.log(nouns);
   console.log(subjects);
   console.log(places);
   console.log(people);
+
   output += "yes sir";
 
   return output;
